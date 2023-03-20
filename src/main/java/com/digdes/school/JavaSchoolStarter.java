@@ -1,6 +1,7 @@
 package com.digdes.school;
 
 import java.util.*;
+import java.util.zip.DataFormatException;
 
 import static com.digdes.school.Constants.*;
 
@@ -16,14 +17,12 @@ public class JavaSchoolStarter extends Converter implements IJavaSchoolStarter {
     @Override
     public List<Map<String, Object>> execute(String request) throws Exception {
         checkCommand(validation(request));
-        print();
         return result;
     }
 
     private String[] validation(String input) {
         String command;
         if (input.matches(COMMAND_DELETE) || input.matches(COMMAND_SELECT)){
-            System.out.println("VALIDATION: IF DELETE/SELECT");
             return new String[]{input};
         } else {
             if (input.contains(COMMAND_DELETE) || input.contains(COMMAND_DELETE.toLowerCase()) ||
@@ -56,7 +55,7 @@ public class JavaSchoolStarter extends Converter implements IJavaSchoolStarter {
         }
     }
 
-    private Map<String, Object> checkCommand(String[] values) {
+    private Map<String, Object> checkCommand(String[] values) throws DataFormatException {
         if (values[0].equalsIgnoreCase(COMMAND_INSERT)) {
             row.put("'id'", null);
             row.put("'lastName'", null);
@@ -65,6 +64,7 @@ public class JavaSchoolStarter extends Converter implements IJavaSchoolStarter {
             row.put("'active'", null);
             row.putAll(convertInsert(values));
             result.add(convertInsert(values));
+            print();
             return row;
         } else if (values[0].equalsIgnoreCase(COMMAND_UPDATE) && !result.isEmpty()) {
             Map<String, Object> updatedRow = new HashMap<>(convertUpdate(values, result));
@@ -72,11 +72,13 @@ public class JavaSchoolStarter extends Converter implements IJavaSchoolStarter {
                 if (result.get(i).containsValue(updatedRow.get("'id'"))) {
                     result.set(i, updatedRow);
                 }
+                print();
             }
         } else if (values[0].equalsIgnoreCase(COMMAND_DELETE) && !result.isEmpty()) {
             Map<String, Object> updatedRow = new HashMap<>();
             if (values.length == 1) {
                 result.clear();
+                print();
             } else {
                 updatedRow.putAll(convertUpdate(values, result));
                 for (int i = 0; i < result.size(); i++) {
@@ -84,10 +86,13 @@ public class JavaSchoolStarter extends Converter implements IJavaSchoolStarter {
                         result.remove(i);
                     }
                 }
+                print();
             }
 
         } else if (values[0].equalsIgnoreCase(COMMAND_SELECT)) {
             if (values.length == 1) {
+                print();
+                return row;
             } else {
                 Map<String, Object> updatedRow = new HashMap<>(convertUpdate(values, result));
                 row.putAll(updatedRow);
@@ -98,7 +103,7 @@ public class JavaSchoolStarter extends Converter implements IJavaSchoolStarter {
     }
 
     private void print () {
-
+        System.out.println(result);
     }
 }
 

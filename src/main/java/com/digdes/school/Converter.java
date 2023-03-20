@@ -1,6 +1,7 @@
 package com.digdes.school;
 
 import java.util.*;
+import java.util.zip.DataFormatException;
 
 public class Converter implements IConverter {
     private long parseLong;
@@ -16,7 +17,7 @@ public class Converter implements IConverter {
     }
 
     @Override
-    public Map<String, Object> convertUpdate(String[] values, List<Map<String, Object>> result) {
+    public Map<String, Object> convertUpdate(String[] values, List<Map<String, Object>> result) throws DataFormatException {
         String[] newValues = new String[values.length-1];
         Map<String, Object> row = new HashMap<>();
         System.arraycopy(values, 0, newValues, 0, newValues.length);
@@ -34,16 +35,18 @@ public class Converter implements IConverter {
             for (Map<String, Object> map : result) {
                 if (map.get(keySubstring) instanceof Long ){
                     parseLong = Long.parseLong(valueSubstring);
-                    if (map.containsKey(keySubstring) && map.containsValue(parseLong) && (keySubstring.matches("'id'") || keySubstring.matches("'age'"))){
+                    if (map.containsKey(keySubstring) && map.containsValue(parseLong) &&
+                            ((keySubstring.matches("'id'") || keySubstring.matches("'age'")))){
                         row.putAll(map);
                         row.putAll(subValues(newValues));
                     }
-                } else if (map.get(keySubstring) instanceof Double && keySubstring.matches("'cost'")){
+                } else if (map.get(keySubstring) instanceof Double){
                     parseDouble = Double.parseDouble(valueSubstring);
-                    if (map.containsKey(keySubstring) && map.containsValue(parseDouble)){
-
+                    if (map.containsValue(parseDouble)){
                         row.putAll(map);
                         row.putAll(subValues(newValues));
+                    } else {
+                        throw new DataFormatException();
                     }
                 } else if (map.get(keySubstring) instanceof Boolean){
                     if (valueSubstring.matches("true")|| valueSubstring.matches("false")) {
@@ -53,17 +56,16 @@ public class Converter implements IConverter {
                             row.putAll(subValues(newValues));
                         }
                     } else {
-                        System.out.println("EXCEPTION");
+                        throw new DataFormatException();
                     }
                 } else if (map.get(keySubstring) instanceof String && keySubstring.matches("'lastName'")) {
                     if (map.containsKey(keySubstring) && map.containsValue(valueSubstring)){
                         row.putAll(map);
                         row.putAll(subValues(newValues));
                     }
-                } else {
-                    System.out.println("EXCEPTION");
+                } else if (map.get(keySubstring)!=null){
+                    throw new DataFormatException();
                 }
-
             }
         }
         return row;
