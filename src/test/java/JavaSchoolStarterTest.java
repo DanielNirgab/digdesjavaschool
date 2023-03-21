@@ -1,4 +1,4 @@
-import com.digdes.school.JavaSchoolStarter;
+import com.digdes.school.ex1.JavaSchoolStarter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

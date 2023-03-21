@@ -1,4 +1,4 @@
-package com.digdes.school;
+package com.digdes.school.ex1;
 
 import java.util.List;
 import java.util.Map;
