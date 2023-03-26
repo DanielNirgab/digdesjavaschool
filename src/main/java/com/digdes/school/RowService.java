@@ -11,26 +11,68 @@ import static com.digdes.school.Constants.*;
 public class RowService {
 
     ConverterService converterService;
-    private final static List<Map<String, Object>> result = new ArrayList<>();
-    private final static Map<String, Object> row = new HashMap<>();
+    public final static List<Map<String, Object>> result = new ArrayList<>();
+    public final static Map<String, Object> row = new HashMap<>();
 
     public RowService(ConverterService converterService) {
         this.converterService = converterService;
     }
 
-    public Map<String, Object> getRowOfObjRequest(String request) {
-        insertToMap(request);
-        updateRow(request);
-        selectRow(request);
-        System.out.println(selectRow(request));
-        return row;
+//    public Map<String, Object> getRowOfObjRequest(String request) {
+//        insertToMap(request);
+//        updateRow(request);
+//        selectRow(request);
+//        System.out.println(selectRow(request));
+//        return row;
+//    }
+
+    private List<List<Object>> getListOfValue(String request){
+        if (converterService.getListOfObjRequest(request).get(0).isEmpty()){
+            throw new RuntimeException("Your Command is not supported");
+        } else {
+            return converterService.getListOfObjRequest(request);
+        }
+    }
+
+    public void doCommand (String request) {
+        String command = getListOfValue(request).get(0).get(0).toString();
+        switch (command) {
+            case (COMMAND_INSERT):
+                insertToMap(request);
+                break;
+            case (COMMAND_UPDATE):
+                updateRow(request);
+                break;
+            case (COMMAND_SELECT):
+                selectRow(request);
+                break;
+            case (COMMAND_DELETE):
+                deleteValue(request);
+                break;
+        }
+    }
+
+    private void deleteValue(String request) {
+        List<List<Object>> listOfValue = getListOfValue(request);
+
+        if (listOfValue.get(2).size() > 0) {
+
+            List<Integer> listOfSelectedIndex = doWhereCommand(listOfValue.get(2));
+
+            for (int i = 0; i < listOfSelectedIndex.size(); i++) {
+                result.remove(result.get(i));
+             //   System.out.println("Was DELETE " + result.get(i));
+            }
+        } else {
+            result.clear();
+          //  System.out.println("Was DELETE " + "ALL");
+        }
     }
 
     private Map<String, Object> insertToMap(String request) {
         Map<String, Object> newRow = new HashMap<>();
-        List<List<Object>> listOfValue = converterService.getListOfObjRequest(request);
+        List<List<Object>> listOfValue = getListOfValue(request);
 
-        if (listOfValue.get(0).get(0).toString().equalsIgnoreCase(COMMAND_INSERT)) {
             for (int i = 0; i < listOfValue.get(1).size(); i++) {
                 String indexValue = listOfValue.get(1).get(i).toString();
                 Matcher matcher = patternCommonRow.matcher(indexValue);
@@ -40,24 +82,29 @@ public class RowService {
             }
             row.putAll(newRow);
             result.add(newRow);
-        }
+        printResult("INSERT", newRow);
         return newRow;
     }
 
     private Map<String, Object> updateRow(String request) {
-        Map<String, Object> updateRow = new HashMap<>();
-        List<List<Object>> listOfValue = converterService.getListOfObjRequest(request);
+        Map<String, Object> updatedRow = new HashMap<>();
+        List<List<Object>> listOfValue = getListOfValue(request);
 
         String keyValue = null;
         Object mapValue = null;
         if (listOfValue.get(2).size() > 0) {
 
             for (int i = 0; i < listOfValue.get(0).size(); i++) {
+                List<Integer> listOfSelectedIndex = new ArrayList<>();
                 if (listOfValue.get(0).get(i).toString().equalsIgnoreCase(COMMAND_WHERE)) {
                     // Если команда WHERE
                     // Выполнить метод с разбором по операторам сравнения - передать в метод listOfValue.get(2), где содержатся условия поиска
                     // Получаем индексы подходящих под условия строк, изменяем строку на новые значения
-                    List<Integer> listOfSelectedIndex = doWhereCommand(listOfValue.get(2));
+                    try {
+                        listOfSelectedIndex = doWhereCommand(listOfValue.get(2));
+                    } catch (NullPointerException e) {
+                        throw new NullPointerException("Row attribute is not present");
+                    }
                     for (int j = 0; j < listOfValue.get(1).size(); j++) {
                         Object valueObject = listOfValue.get(1).get(j);
                         if (valueObject instanceof String) {
@@ -70,6 +117,7 @@ public class RowService {
                         if (keyValue != null) {
                             for (Integer ofSelectedIndex : listOfSelectedIndex) {
                                 result.get(ofSelectedIndex).put(keyValue, mapValue);
+                                printResult("UPDATE", result.get(ofSelectedIndex));
                             }
                         }
                     }
@@ -86,19 +134,20 @@ public class RowService {
                         mapValue = listOfValue.get(1).get(j + 2);
                     }
                 }
-            }
-            if (keyValue != null) {
-                for (Map<String, Object> stringObjectMap : result) {
-                    stringObjectMap.put(keyValue, mapValue);
+                if (keyValue != null) {
+                    for (Map<String, Object> stringObjectMap : result) {
+                        stringObjectMap.put(keyValue, mapValue);
+                    }
                 }
             }
         }
-        return updateRow;
+
+        return updatedRow;
     }
 
     private List<Map<String, Object>> selectRow(String request) {
 
-        List<List<Object>> listOfValue = converterService.getListOfObjRequest(request);
+        List<List<Object>> listOfValue = getListOfValue(request);
         List<Map<String, Object>> selectedRow = new ArrayList<>();
         if (listOfValue.get(2).size() > 0) {
 
@@ -106,9 +155,11 @@ public class RowService {
 
             for (int i = 0; i < listOfSelectedIndex.size(); i++) {
                 selectedRow.add(result.get(i));
+              //  System.out.println("Was SELECT " + result.get(i));
             }
         } else {
             selectedRow.addAll(result);
+           // System.out.println("Was SELECT " + "ALL");
         }
         return selectedRow;
     }
@@ -178,12 +229,16 @@ public class RowService {
 
                     if (Operators.getByOperator(operationList.get(j)).operation(result.get(i).get(entry.getKey()), objectValue)) {
                         // Выводит строку, которую нашёл в записи, необходимо сохранить в новую строку и вернуть
-                        indexList.add(i);
+                            indexList.add(i);
                     }
                 }
             }
         }
         return indexList;
+    }
+
+    private void printResult (String command, Map<String, Object> row) {
+       // System.out.println("Was " + command + " " + row);
     }
 
 }

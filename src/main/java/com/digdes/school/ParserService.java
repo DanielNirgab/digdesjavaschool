@@ -42,15 +42,23 @@ public class ParserService {
 
 
             if (matcherLong.matches() && matcherOperation.matches()) {
-                parsedList.add(value.get(i));
-                parsedList.add(value.get(i+1));
-                parsedList.add(Long.parseLong(value.get(i+2)));
-                i += 2;
+                try {
+                    parsedList.add(value.get(i));
+                    parsedList.add(value.get(i+1));
+                    parsedList.add(Long.parseLong(value.get(i+2)));
+                    i += 2;
+                } catch (IndexOutOfBoundsException e) {
+                    throw new RuntimeException("Value empty for " + value.get(i));
+                }
             } else if (matcherDouble.matches() && matcherOperation.matches()) {
-                parsedList.add(value.get(i));
-                parsedList.add(value.get(i+1));
-                parsedList.add(Double.parseDouble(value.get(i+2)));
-                i += 2;
+                try {
+                    parsedList.add(value.get(i));
+                    parsedList.add(value.get(i+1));
+                    parsedList.add(Double.parseDouble(value.get(i+2)));
+                    i += 2;
+                }  catch (IndexOutOfBoundsException e) {
+                    throw new RuntimeException("Value empty for " + value.get(i));
+                }
             } else if (matcherBoolean.matches() && matcherOperation.matches()){
                 String falseString = "false";
                 String trueString = "true";
@@ -60,7 +68,7 @@ public class ParserService {
                     parsedList.add(Boolean.parseBoolean(value.get(i + 2)));
                     i += 2;
                 } else {
-                    throw new RuntimeException("BAD REQUEST");
+                    throw new RuntimeException("BAD REQUEST" + "['active' value should be Boolean]");
                 }
             } else if (matcherString.matches() && matcherOperation.matches()) {
                 parsedList.add(value.get(i));
@@ -68,7 +76,6 @@ public class ParserService {
                 parsedList.add(value.get(i));
             }
         }
-
         return parsedList;
     }
 
