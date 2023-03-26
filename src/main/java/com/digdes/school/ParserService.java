@@ -6,6 +6,11 @@ import java.util.regex.Matcher;
 
 import static com.digdes.school.Constants.*;
 
+/**
+ *
+ * Class parsing input String, divide and convert values to new Type
+ *
+ */
 
 public class ParserService {
 
@@ -15,6 +20,11 @@ public class ParserService {
     public List<Object> getParseList (String request) {
         return parseValue(splitString(request));
     }
+
+    /**
+     * Split main String to parts by pattern {@link Constants}
+     * @param request - String from main input
+     */
     private List<String> splitString(String request) {
         Matcher matcher = patternAllObj.matcher(request);
         List<String> splitedRequest = new ArrayList<>();
@@ -25,6 +35,10 @@ public class ParserService {
         return splitedRequest;
     }
 
+    /**
+     * Split values to List of value with LIFO method by patterns
+     * @param value - Splited String by word
+     */
     private List<Object> parseValue (List<String> value) {
         List<Object> parsedList = new ArrayList<>();
         for (int i = 0; i < value.size(); i++) {
@@ -76,6 +90,7 @@ public class ParserService {
                 parsedList.add(value.get(i));
             }
         }
+
         return parsedList;
     }
 
