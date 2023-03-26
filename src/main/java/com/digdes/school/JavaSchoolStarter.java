@@ -20,9 +20,8 @@ public class JavaSchoolStarter extends RowService  {
     public List<Map<String,Object>> execute(String request) {
 
         try {
-            doCommand(request);
             System.out.print("RESULT: ");
-            System.out.println(result + "\n");
+            doCommand(request);
         } catch (Exception e) {
             e.printStackTrace();
         }

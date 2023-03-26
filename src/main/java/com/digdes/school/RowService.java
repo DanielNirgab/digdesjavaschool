@@ -1,9 +1,6 @@
 package com.digdes.school;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 
 import static com.digdes.school.Constants.*;
@@ -41,15 +38,18 @@ public class RowService {
         switch (command) {
             case (COMMAND_INSERT):
                 insertToMap(request);
+                System.out.println(result);
                 break;
             case (COMMAND_UPDATE):
                 updateRow(request);
+                System.out.println(result);
                 break;
             case (COMMAND_SELECT):
-                selectRow(request);
+                System.out.println(selectRow(request));
                 break;
             case (COMMAND_DELETE):
                 deleteValue(request);
+                System.out.println(result);
                 break;
         }
     }
@@ -63,7 +63,7 @@ public class RowService {
 
         if (listOfValue.get(2).size() > 0) {
 
-            List<Integer> listOfSelectedIndex = doWhereCommand(listOfValue.get(2));
+            Set<Integer> listOfSelectedIndex = doWhereCommand(listOfValue.get(2));
 
             for (int i = 0; i < listOfSelectedIndex.size(); i++) {
                 result.remove(result.get(i));
@@ -110,7 +110,7 @@ public class RowService {
         if (listOfValue.get(2).size() > 0) {
 
             for (int i = 0; i < listOfValue.get(0).size(); i++) {
-                List<Integer> listOfSelectedIndex = new ArrayList<>();
+                Set<Integer> listOfSelectedIndex = new HashSet<>();
                 if (listOfValue.get(0).get(i).toString().equalsIgnoreCase(COMMAND_WHERE)) {
 
                     try {
@@ -170,8 +170,7 @@ public class RowService {
         List<Map<String, Object>> selectedRow = new ArrayList<>();
         if (listOfValue.get(2).size() > 0) {
 
-            List<Integer> listOfSelectedIndex = doWhereCommand(listOfValue.get(2));
-
+            Set<Integer> listOfSelectedIndex = doWhereCommand(listOfValue.get(2));
             for (int i = 0; i < listOfSelectedIndex.size(); i++) {
                 selectedRow.add(result.get(i));
               //  System.out.println("Was SELECT " + result.get(i));
@@ -187,7 +186,7 @@ public class RowService {
      * Should find row/rows from Table by condition
      * @param condition - Specific condition after WHERE command
      */
-    private List<Integer> doWhereCommand(List<Object> condition) {
+    private Set<Integer> doWhereCommand(List<Object> condition) {
 
         List<Map<String, Object>> mapList = new ArrayList<>();
         List<String> operatorList = new ArrayList<>();
@@ -245,15 +244,14 @@ public class RowService {
      * @param mapList - Condition for compare
      * @param operationList - List of operators in condition
      */
-    private List<Integer> doOperation(List<Map<String, Object>> mapList, List<String> operationList) {
-        List<Integer> indexList = new ArrayList<>();
-        for (int i = 0; i < result.size(); i++) {
+    private Set<Integer> doOperation(List<Map<String, Object>> mapList, List<String> operationList) {
+        Set<Integer> indexList = new HashSet<>();
+        for (int j = 0; j < mapList.size(); j++) {
 
-            for (int j = 0; j < mapList.size(); j++) {
+            for (int i = 0; i < result.size(); i++) {
 
                 for (Map.Entry<String, Object> entry : mapList.get(j).entrySet()) {
                     Object objectValue = mapList.get(j).get(entry.getKey());
-
                     if (Operators.getByOperator(operationList.get(j)).operation(result.get(i).get(entry.getKey()), objectValue)) {
                             indexList.add(i);
                     }
