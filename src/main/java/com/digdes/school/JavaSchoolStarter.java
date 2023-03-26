@@ -13,6 +13,10 @@ public class JavaSchoolStarter extends RowService  {
         super(new ConverterService(new ParserService()));
     }
 
+    /**
+     * Point of enter to all Services
+     * @param request - String from main input
+     */
     public List<Map<String,Object>> execute(String request) {
 
         try {
