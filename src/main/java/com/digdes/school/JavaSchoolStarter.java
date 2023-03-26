@@ -1,17 +1,40 @@
 package com.digdes.school;
 
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
 
-public class JavaSchoolStarter implements IJavaSchoolStarter {
+import static com.digdes.school.Constants.COMMAND_INSERT;
+
+public class JavaSchoolStarter extends RowService  {
+
+
     public JavaSchoolStarter(){
-
+        super(new ConverterService(new ParserService()));
     }
 
-    public List<Map<String,Object>> execute(String request) throws Exception {
+    public List<Map<String,Object>> execute(String request) {
 
-          return new ArrayList<>();
+        try {
+            doCommand(request);
+            System.out.print("RESULT: ");
+            System.out.println(result + "\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
+
+
+
+
+
+
+
+
+
+
+
+
 }
-
