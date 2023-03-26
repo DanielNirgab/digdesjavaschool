@@ -85,6 +85,30 @@ public class JavaSchoolStarterTest {
         assertThat(actualList).isEqualTo(expected);
     }
 
+    @Test
+    public void select_With_Where_Ilike_Test () {
+        actualList = starter.execute("SELECT WHERE 'lastName' ilike '%О%'");
+        expected.add(valueInsertTests());
+        expected.add(value2InsertTests());
+        assertThat(actualList).isEqualTo(expected);
+    }
+
+    @Test
+    public void select_With_Where_like_Test () {
+        actualList = starter.execute("SELECT WHERE 'lastName' like '%Ф%'");
+        expected.add(valueInsertTests());
+        expected.add(value2InsertTests());
+        assertThat(actualList).isEqualTo(expected);
+    }
+
+    @Test
+    public void select_With_Where_And_Test () {
+        actualList = starter.execute("SELECT WHERE 'age' <= 39 and 'id' = 3");
+        expected.add(valueInsertTests());
+        expected.add(value2InsertTests());
+        assertThat(actualList).isEqualTo(expected);
+    }
+
 
 
     public Map<String, Object> valueInsertTests() {
