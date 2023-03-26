@@ -6,6 +6,11 @@ import java.util.regex.Matcher;
 
 import static com.digdes.school.Constants.*;
 
+/**
+ *
+ * This class convert Values
+ *
+ */
 public class ConverterService {
 
     ParserService parseService;
@@ -14,10 +19,18 @@ public class ConverterService {
         this.parseService = parseService;
     }
 
+    /**
+     * Point fo enter
+     @param request String from main input
+     */
     public List<List<Object>> getListOfObjRequest (String request) {
         return new ArrayList<>(divideByValue(parseService.getParseList(request)));
     }
 
+    /**
+     * Divide values to new List [COMMANDS] [VALUE] [CONDITION]
+    @param objectList {@link ParserService} List of splited value by word
+     */
     private List<List<Object>> divideByValue(List<Object> objectList) {
 
         List<List<Object>> commonList = new ArrayList<>();
@@ -56,6 +69,7 @@ public class ConverterService {
             commonList.add(valueList);
             commonList.add(conditionList);
         }
+
         return commonList;
     }
 

@@ -8,6 +8,11 @@ import java.util.regex.Matcher;
 
 import static com.digdes.school.Constants.*;
 
+/**
+ *
+ * Class working with rows from Table
+ *
+ */
 public class RowService {
 
     ConverterService converterService;
@@ -18,13 +23,6 @@ public class RowService {
         this.converterService = converterService;
     }
 
-//    public Map<String, Object> getRowOfObjRequest(String request) {
-//        insertToMap(request);
-//        updateRow(request);
-//        selectRow(request);
-//        System.out.println(selectRow(request));
-//        return row;
-//    }
 
     private List<List<Object>> getListOfValue(String request){
         if (converterService.getListOfObjRequest(request).get(0).isEmpty()){
@@ -33,7 +31,11 @@ public class RowService {
             return converterService.getListOfObjRequest(request);
         }
     }
-
+    /**
+     * Point of enter
+     * Check input command and start method of command
+     * @param request - String from main input
+     */
     public void doCommand (String request) {
         String command = getListOfValue(request).get(0).get(0).toString();
         switch (command) {
@@ -51,7 +53,11 @@ public class RowService {
                 break;
         }
     }
-
+    /**
+     * Command DELETE
+     * Should Delete row or all list
+     * @param request - String from main input
+     */
     private void deleteValue(String request) {
         List<List<Object>> listOfValue = getListOfValue(request);
 
@@ -68,7 +74,11 @@ public class RowService {
           //  System.out.println("Was DELETE " + "ALL");
         }
     }
-
+    /**
+     * Command INSERT
+     * Should Insert new row to Table
+     * @param request - String from main input
+     */
     private Map<String, Object> insertToMap(String request) {
         Map<String, Object> newRow = new HashMap<>();
         List<List<Object>> listOfValue = getListOfValue(request);
@@ -85,7 +95,12 @@ public class RowService {
         printResult("INSERT", newRow);
         return newRow;
     }
-
+    /**
+     * Command UPDATE
+     * Should Update rows to new Value
+     * Could find row with specific condition by command WHERE and update this row
+     * @param request - String from main input
+     */
     private Map<String, Object> updateRow(String request) {
         Map<String, Object> updatedRow = new HashMap<>();
         List<List<Object>> listOfValue = getListOfValue(request);
@@ -97,9 +112,7 @@ public class RowService {
             for (int i = 0; i < listOfValue.get(0).size(); i++) {
                 List<Integer> listOfSelectedIndex = new ArrayList<>();
                 if (listOfValue.get(0).get(i).toString().equalsIgnoreCase(COMMAND_WHERE)) {
-                    // Если команда WHERE
-                    // Выполнить метод с разбором по операторам сравнения - передать в метод listOfValue.get(2), где содержатся условия поиска
-                    // Получаем индексы подходящих под условия строк, изменяем строку на новые значения
+
                     try {
                         listOfSelectedIndex = doWhereCommand(listOfValue.get(2));
                     } catch (NullPointerException e) {
@@ -124,7 +137,7 @@ public class RowService {
                 }
             }
         } else {
-            // Обновить все записи
+
             for (int j = 0; j < listOfValue.get(1).size(); j++) {
                 Object valueObject = listOfValue.get(1).get(j);
                 if (valueObject instanceof String) {
@@ -145,6 +158,12 @@ public class RowService {
         return updatedRow;
     }
 
+    /**
+     * Command SELECT
+     * Should Select row/rows from Table
+     * Could find row with specific condition by command WHERE
+     * @param request - String from main input
+     */
     private List<Map<String, Object>> selectRow(String request) {
 
         List<List<Object>> listOfValue = getListOfValue(request);
@@ -163,10 +182,13 @@ public class RowService {
         }
         return selectedRow;
     }
-
+    /**
+     * Command WHERE
+     * Should find row/rows from Table by condition
+     * @param condition - Specific condition after WHERE command
+     */
     private List<Integer> doWhereCommand(List<Object> condition) {
-        // 1) Если содрежит операторы OR | AND -> выполнить метод по операторам сравнения между двумя значениями;
-        // ИНАЧЕ 2) выполнить метод по операторам сравнения
+
         List<Map<String, Object>> mapList = new ArrayList<>();
         List<String> operatorList = new ArrayList<>();
         if (condition.size() > 3) {
@@ -217,7 +239,12 @@ public class RowService {
         }
         return doOperation(mapList, operatorList);
     }
-
+    /**
+     * Operators
+     * Compare 2 value
+     * @param mapList - Condition for compare
+     * @param operationList - List of operators in condition
+     */
     private List<Integer> doOperation(List<Map<String, Object>> mapList, List<String> operationList) {
         List<Integer> indexList = new ArrayList<>();
         for (int i = 0; i < result.size(); i++) {
@@ -228,7 +255,6 @@ public class RowService {
                     Object objectValue = mapList.get(j).get(entry.getKey());
 
                     if (Operators.getByOperator(operationList.get(j)).operation(result.get(i).get(entry.getKey()), objectValue)) {
-                        // Выводит строку, которую нашёл в записи, необходимо сохранить в новую строку и вернуть
                             indexList.add(i);
                     }
                 }
