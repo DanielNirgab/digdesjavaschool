@@ -1,4 +1,4 @@
-package com.digdes.school.ex2;
+package com.digdes.school;
 
 import java.util.Objects;
 

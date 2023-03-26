@@ -1,4 +1,4 @@
-package com.digdes.school.ex2;
+package com.digdes.school;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +15,9 @@ public class JavaSchoolStarter  {
         return new ArrayList<>();
     }
 
-    public void validation (String request) {
 
-    }
+
+
 
 
 }

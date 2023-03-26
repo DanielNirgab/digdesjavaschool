@@ -1,10 +1,10 @@
-package com.digdes.school.ex2;
+package com.digdes.school;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import static com.digdes.school.ex2.Constants.*;
+import static com.digdes.school.Constants.*;
 
 
 public class ParserService {
@@ -68,14 +68,8 @@ public class ParserService {
                 parsedList.add(value.get(i));
             }
         }
-        System.out.println(parsedList);
+
         return parsedList;
     }
-
-
-
-
-
-
 
 }
